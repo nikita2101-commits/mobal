@@ -1,0 +1,406 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5"
+    tools:context=".DrawingActivity">
+
+    <!-- Простая структура без вложенных LinearLayout с weight -->
+
+    <!-- Top Bar -->
+    <LinearLayout
+        android:id="@+id/topToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <Button
+            android:id="@+id/btnToggleBrushesMain"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="🖌"
+            android:textSize="20sp" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnUndo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="↶"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnRedo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="↷"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnEraser"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="✏️"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="🗑"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:text="💾"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btnHideUI"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#FFFFFF"
+            android:text="👁"
+            android:textSize="20sp" />
+    </LinearLayout>
+
+    <!-- Size Controls -->
+    <LinearLayout
+        android:id="@+id/sizeControls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintTop_toBottomOf="@id/topToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Размер:"
+            android:textSize="14sp"
+            android:layout_marginEnd="8dp" />
+
+        <TextView
+            android:id="@+id/tvBrushSize"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:background="#4CAF50"
+            android:padding="4dp"
+            android:text="20"
+            android:textSize="14sp"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginEnd="8dp" />
+
+        <SeekBar
+            android:id="@+id/seekBarBrush"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:max="100"
+            android:progress="20" />
+    </LinearLayout>
+
+    <!-- Drawing canvas -->
+    <ImageView
+        android:id="@+id/drawingCanvas"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="#FFFFFF"
+        android:scaleType="fitXY"
+        app:layout_constraintTop_toBottomOf="@id/sizeControls"
+        app:layout_constraintBottom_toTopOf="@id/toolsContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Current brush info -->
+    <LinearLayout
+        android:id="@+id/toolsContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/brushPaletteContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/tvCurrentBrush"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Карандаш"
+            android:textSize="14sp"
+            android:gravity="center" />
+
+        <TextView
+            android:id="@+id/tvCurrentBrushIcon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:text="✏️"
+            android:textSize="20sp"
+            android:layout_marginHorizontal="8dp" />
+
+        <View
+            android:id="@+id/currentColorPreview"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="#000000" />
+    </LinearLayout>
+
+    <!-- Brush palette container -->
+    <LinearLayout
+        android:id="@+id/brushPaletteContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/colorContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Brush header -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Кисти"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/btnToggleBrushes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="#FFFFFF"
+                android:text="▲ Свернуть кисти"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Brush palette grid -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/brushPaletteRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:minHeight="100dp" />
+    </LinearLayout>
+
+    <!-- Color container -->
+    <LinearLayout
+        android:id="@+id/colorContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/paletteContainer"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Quick colors row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <!-- Используем простые View без сложных атрибутов -->
+            <View
+                android:id="@+id/colorBlack"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#000000" />
+
+            <View
+                android:id="@+id/colorWhite"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#FFFFFF" />
+
+            <View
+                android:id="@+id/colorRed"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#FF0000" />
+
+            <View
+                android:id="@+id/colorGreen"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#00FF00" />
+
+            <View
+                android:id="@+id/colorBlue"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#0000FF" />
+
+            <View
+                android:id="@+id/colorYellow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#FFFF00" />
+
+            <View
+                android:id="@+id/colorPurple"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#FF00FF" />
+
+            <View
+                android:id="@+id/colorOrange"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#FF9800" />
+
+            <View
+                android:id="@+id/colorPink"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#E91E63" />
+
+            <View
+                android:id="@+id/colorCyan"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="2dp"
+                android:background="#00BCD4" />
+        </LinearLayout>
+
+        <!-- Color picker button -->
+        <Button
+            android:id="@+id/btnColorPicker"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:background="#FFFFFF"
+            android:text="🎨 Расширенный выбор цвета"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Advanced palette container -->
+    <LinearLayout
+        android:id="@+id/paletteContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="8dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Palette toggle -->
+        <Button
+            android:id="@+id/btnTogglePalette"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:text="▼ Показать палитру"
+            android:textSize="12sp" />
+
+        <!-- Color palette -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Основные цвета:"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/colorPaletteRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:minHeight="80dp" />
+
+        <!-- Shade palette -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Оттенки:"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/shadePaletteRecycler"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:minHeight="80dp" />
+    </LinearLayout>
+
+    <!-- Brush preview -->
+    <LinearLayout
+        android:id="@+id/brushPreviewContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#FFFFFF"
+        android:padding="4dp"
+        android:visibility="visible"
+        app:layout_constraintTop_toBottomOf="@id/topToolbar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/sizeControls">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Предпросмотр:"
+            android:textSize="10sp"
+            android:textColor="#757575"
+            android:layout_marginEnd="4dp" />
+
+        <View
+            android:id="@+id/brushPreviewCircle"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="#000000" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,76 @@
+<resources>
+    <!-- App name -->
+    <string name="app_name">ArtChat Studio</string>
+
+    <!-- Auth -->
+    <string name="login_title">Вход в ArtChat</string>
+    <string name="register_title">Регистрация</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Пароль</string>
+    <string name="username_hint">Имя пользователя</string>
+    <string name="display_name_hint">Отображаемое имя</string>
+    <string name="login_button">Войти</string>
+    <string name="register_button">Зарегистрироваться</string>
+    <string name="guest_button">Гостевой режим</string>
+    <string name="no_account">Нет аккаунта? Зарегистрируйтесь</string>
+    <string name="have_account">Уже есть аккаунт? Войдите</string>
+    <string name="guest_warning">Для чата требуется регистрация</string>
+
+    <!-- Menu -->
+    <string name="menu_drawing">Рисование</string>
+    <string name="menu_chat">Чат</string>
+    <string name="menu_gallery">Галерея</string>
+    <string name="menu_profile">Профиль</string>
+    <string name="menu_logout">Выйти из аккаунта</string>
+    <string name="menu_exit">Выйти из приложения</string>
+
+    <!-- Drawing -->
+    <string name="drawing_title">Рисование</string>
+    <string name="brush_size">Размер кисти</string>
+    <string name="color_picker">Выбор цвета</string>
+    <string name="eraser">Ластик</string>
+    <string name="clear">Очистить</string>
+    <string name="save">Сохранить</string>
+    <string name="hide_ui">Скрыть</string>
+    <string name="show_ui">Показать</string>
+    <string name="save_success">Рисунок сохранен!</string>
+    <string name="save_error">Ошибка сохранения</string>
+    <string name="brush_solid">Обычная</string>
+    <string name="brush_blur">Размытая</string>
+    <string name="brush_neon">Неон</string>
+
+    <!-- Chat -->
+    <string name="chat_title">Чат</string>
+    <string name="global_chat">Глобальный чат</string>
+    <string name="private_chat">Личные сообщения</string>
+    <string name="create_chat">Создать чат</string>
+    <string name="type_message">Введите сообщение...</string>
+    <string name="send">Отправить</string>
+    <string name="online_users">Онлайн пользователи</string>
+    <string name="friends">Друзья</string>
+    <string name="add_friend">Добавить в друзья</string>
+
+    <!-- Gallery -->
+    <string name="gallery_title">Галерея</string>
+    <string name="my_drawings">Мои рисунки</string>
+    <string name="public_drawings">Публичные рисунки</string>
+    <string name="no_drawings">Нет рисунков</string>
+    <string name="delete">Удалить</string>
+    <string name="share">Поделиться</string>
+
+    <!-- Profile -->
+    <string name="profile_title">Профиль</string>
+    <string name="edit_profile">Редактировать профиль</string>
+    <string name="change_password">Сменить пароль</string>
+    <string name="notifications">Уведомления</string>
+    <string name="about">О приложении</string>
+
+    <!-- Common -->
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="cancel">Отмена</string>
+    <string name="ok">OK</string>
+    <string name="error">Ошибка</string>
+    <string name="loading">Загрузка...</string>
+    <string name="retry">Повторить</string>
+</resources>

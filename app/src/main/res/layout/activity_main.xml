@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:background="@color/purple_50">
+
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Пользователь"
+        android:textSize="18sp"
+        android:textColor="@color/purple_700"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:id="@+id/tvChatHint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Для чата требуется регистрация"
+        android:textSize="14sp"
+        android:textColor="@color/purple_500"
+        android:visibility="gone"
+        android:layout_marginBottom="16dp" />
+
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Добро пожаловать в ArtChat!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/purple_700"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnDraw"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="🎨 Рисование"
+        android:textSize="16sp"
+        android:backgroundTint="@color/purple_700"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnChat"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="💬 Чат"
+        android:textSize="16sp"
+        android:backgroundTint="@color/purple_700"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnProfile"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="👤 Профиль"
+        android:textSize="16sp"
+        android:backgroundTint="@color/purple_700"
+        android:layout_marginBottom="32dp" />
+
+    <Button
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Выйти из аккаунта"
+        android:textSize="16sp"
+        android:backgroundTint="@color/purple_200"
+        android:textColor="@color/purple_700"
+        android:layout_marginBottom="16dp" />
+
+    <Button
+        android:id="@+id/btnExit"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="Выйти из приложения"
+        android:textSize="16sp"
+        android:backgroundTint="@color/white"
+        android:textColor="@color/purple_700" />
+
+</LinearLayout>
