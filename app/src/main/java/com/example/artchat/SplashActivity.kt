@@ -11,18 +11,21 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_splash) // Убедитесь, что этот файл существует
 
         Handler(Looper.getMainLooper()).postDelayed({
-            // Проверяем, авторизован ли пользователь
             val preferences = PreferencesManager(this)
-            val intent = if (preferences.isLoggedIn()) {
-                Intent(this, MainActivity::class.java)
+
+            // Проверяем, залогинен ли пользователь
+            if (preferences.isLoggedIn()) {
+                // Если залогинен - идем в главное меню (HomeActivity)
+                startActivity(Intent(this, HomeActivity::class.java))
             } else {
-                Intent(this, LoginActivity::class.java)
+                // Если не залогинен - идем на экран входа
+                startActivity(Intent(this, LoginActivity::class.java))
             }
 
-            startActivity(intent)
-            finish()
-        }, 2000) // 2 секунды задержки
+            finish() // Закрываем сплеш-экран
+        }, 2000)
     }
 }

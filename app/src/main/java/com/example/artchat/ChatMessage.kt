@@ -1,22 +1,17 @@
 package com.example.artchat.model
 
-data class ChatMessage(
-    val id: Int? = null,
-    val room: String = "global",
-    val sender_id: Int,
-    val sender_name: String,
-    val message_type: String = "text",
-    val content: String,
-    val drawing_url: String? = null,
-    val image_url: String? = null,
-    val timestamp: String? = null,
-    val is_read: Boolean = false
-)
+import com.google.gson.annotations.SerializedName
 
-data class SendMessageRequest(
-    val room: String = "global",
-    val content: String,
-    val message_type: String = "text",
-    val drawing_url: String? = null,
-    val image_url: String? = null
+data class ChatMessage(
+    @SerializedName("id") val id: Int? = null,
+    @SerializedName("room") val room: String? = null,
+    @SerializedName("sender_id") val sender_id: Int? = null,
+    @SerializedName("sender_name") val sender_name: String? = null,
+    @SerializedName("message_type") val message_type: String? = null,
+    @SerializedName("content") val content: String? = null,
+    @SerializedName("drawing_url") val drawing_url: String? = null,
+    @SerializedName("image_url") val image_url: String? = null,
+    @SerializedName("timestamp") val timestamp: String? = null,
+    @SerializedName("is_read") val is_read: Boolean? = false,
+    val temp_id: String? = null // Добавляем для отслеживания временных сообщений
 )

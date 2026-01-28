@@ -1,135 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/white">
+    android:background="#F5F5F5">
 
-    <!-- Chat Header -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="4dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_vertical">
-
-            <!-- Back Button -->
-            <ImageButton
-                android:id="@+id/btnBack"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_arrow_back"
-                android:background="?android:attr/selectableItemBackgroundBorderless" />
-
-            <!-- Title -->
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Глобальный чат"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="@color/purple_700"
-                android:gravity="center" />
-
-            <!-- Online Users -->
-            <ImageButton
-                android:id="@+id/btnOnlineUsers"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_people"
-                android:background="?android:attr/selectableItemBackgroundBorderless" />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- Messages -->
+    <!-- RecyclerView для отображения сообщений -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewMessages"
-        android:layout_width="match_parent"
+        android:id="@+id/rvMessages"
+        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:padding="8dp"
+        android:clipToPadding="false"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/llInputContainer"
+        tools:listitem="@layout/item_message" />
 
-    <!-- Empty State -->
-    <TextView
-        android:id="@+id/tvEmpty"
-        android:layout_width="wrap_content"
+    <!-- Контейнер для ввода сообщения -->
+    <LinearLayout
+        android:id="@+id/llInputContainer"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Нет сообщений\nНачните общение!"
-        android:textSize="16sp"
-        android:textColor="@color/text_secondary"
-        android:gravity="center"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp" />
+        android:orientation="horizontal"
+        android:padding="12dp"
+        android:background="@android:color/white"
+        android:elevation="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Input Area -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="0dp"
-        app:cardElevation="8dp">
-
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- Поле ввода сообщения -->
+        <EditText
+            android:id="@+id/etMessage"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:gravity="center_vertical">
+            android:layout_weight="1"
+            android:hint="Введите сообщение..."
+            android:inputType="textCapSentences|textMultiLine"
+            android:imeOptions="actionSend"
+            android:maxLines="3"
+            android:textSize="16sp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:importantForAutofill="no"
+            android:scrollHorizontally="false" />
 
-            <!-- Attach Button -->
-            <ImageButton
-                android:id="@+id/btnAttach"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_attach"
-                android:background="?android:attr/selectableItemBackgroundBorderless" />
+        <!-- Кнопка отправки -->
+        <Button
+            android:id="@+id/btnSend"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Отправить"
+            android:backgroundTint="#6200EE"
+            android:textColor="@android:color/white"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="12dp"
+            android:minHeight="0dp"
+            android:minWidth="0dp" />
 
-            <!-- Message Input -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense">
+    </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etMessage"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="Введите сообщение..."
-                    android:maxLines="3" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Send Button -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnSend"
-                android:layout_width="wrap_content"
-                android:layout_height="48dp"
-                android:text="Отпр"
-                app:icon="@drawable/ic_send"
-                app:iconGravity="textStart"
-                app:cornerRadius="24dp"
-                android:layout_marginStart="8dp" />
-
-            <!-- Private Chat Button -->
-            <ImageButton
-                android:id="@+id/btnPrivateChat"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/ic_private"
-                android:background="?android:attr/selectableItemBackgroundBorderless"
-                android:layout_marginStart="8dp" />
-
-        </LinearLayout>
-
-    </com.google.android.material.card.MaterialCardView>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

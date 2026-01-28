@@ -1,178 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- ДОБАВЛЕНО: Стиль Widget для совместимости -->
-    <style name="Widget">
-        <!-- Базовый стиль для виджетов -->
-    </style>
-
     <!-- Базовая тема -->
     <style name="Theme.ArtChat" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <!-- Primary brand color -->
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
         <item name="colorOnPrimary">@color/white</item>
-
-        <!-- Secondary brand color -->
         <item name="colorSecondary">@color/teal_200</item>
         <item name="colorSecondaryVariant">@color/teal_700</item>
         <item name="colorOnSecondary">@color/black</item>
-
-        <!-- Status bar -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-
-        <!-- Customize your theme here -->
-        <item name="android:windowBackground">@color/purple_50</item>
         <item name="android:windowLightStatusBar" tools:targetApi="m">true</item>
-
-        <!-- Material Components -->
-        <item name="materialButtonStyle">@style/Widget.MaterialComponents.Button</item>
-        <item name="textInputStyle">@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox</item>
-
-        <!-- ДОБАВЛЕНО: Цвета текста для EditText -->
-        <item name="android:editTextColor">@color/black</item>
-        <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
-        <item name="colorControlNormal">@color/purple_200</item>
-        <item name="colorControlActivated">@color/purple_500</item>
-        <item name="colorControlHighlight">@color/purple_200</item>
-
-        <!-- ДОБАВЛЕНО: Специально для TextInputLayout -->
-        <item name="materialThemeOverlay">@style/ThemeOverlay.ArtChat.TextInputEditText</item>
     </style>
 
-    <!-- ДОБАВЛЕНО: Основной стиль Widget.ArtChat -->
-    <style name="Widget.ArtChat">
-        <!-- Базовый стиль для виджетов -->
-    </style>
-
-    <!-- Тема для Splash Screen -->
-    <style name="Theme.ArtChat.Splash" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash_background</item>
-        <item name="android:windowFullscreen">true</item>
-        <item name="android:windowContentOverlay">@null</item>
-        <item name="android:windowNoTitle">true</item>
-    </style>
-
-    <!-- Кастомные стили кнопок -->
-    <style name="Widget.ArtChat.Button" parent="Widget.MaterialComponents.Button">
-        <item name="cornerRadius">28dp</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-
-    <style name="Widget.ArtChat.Button.Outlined" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="cornerRadius">28dp</item>
-        <item name="strokeWidth">2dp</item>
-        <item name="strokeColor">@color/purple_200</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <!-- Стили для инструментов рисования -->
-    <style name="ToolButton">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_margin">2dp</item>
-        <item name="android:textSize">20sp</item>
-        <item name="android:background">@drawable/tool_button_selector</item>
-        <item name="android:textColor">@color/white</item>
-    </style>
-
-    <style name="BrushButton">
-        <item name="android:layout_width">48dp</item>
-        <item name="android:layout_height">48dp</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:textStyle">bold</item>
-        <item name="android:background">@drawable/brush_button_selector</item>
-        <item name="android:textColor">@color/black</item>
-    </style>
-
-    <!-- ИСПРАВЛЕНО: ColorButton стиль -->
-    <style name="ColorButton">
-        <item name="android:layout_width">32dp</item>
-        <item name="android:layout_height">32dp</item>
-        <item name="android:layout_margin">4dp</item>
-        <item name="android:textSize">12sp</item>
-        <item name="android:background">@drawable/color_button_selector</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <!-- Стили для рисования -->
-    <style name="Widget.ArtChat.BrushSizeText">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:padding">4dp</item>
-    </style>
-
-    <style name="Widget.ArtChat.PaletteTitle">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:layout_marginBottom">4dp</item>
-    </style>
-
-    <!-- Кастомные стили текстовых полей -->
-    <style name="Widget.ArtChat.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-        <item name="boxCornerRadiusTopStart">12dp</item>
-        <item name="boxCornerRadiusTopEnd">12dp</item>
-        <item name="boxCornerRadiusBottomStart">12dp</item>
-        <item name="boxCornerRadiusBottomEnd">12dp</item>
-        <item name="hintTextColor">@color/purple_500</item>
-        <item name="boxStrokeColor">@color/purple_200</item>
-        <item name="boxStrokeWidth">1dp</item>
-        <item name="boxStrokeWidthFocused">2dp</item>
-    </style>
-
-    <!-- ДОБАВЛЕНО: ThemeOverlay для TextInputEditText -->
-    <style name="ThemeOverlay.ArtChat.TextInputEditText" parent="">
-        <item name="editTextStyle">@style/Widget.ArtChat.TextInputEditText</item>
-    </style>
-
-    <!-- ДОБАВЛЕНО: Стиль для TextInputEditText -->
-    <style name="Widget.ArtChat.TextInputEditText" parent="Widget.MaterialComponents.TextInputEditText.OutlinedBox">
-        <item name="android:textColor">@color/black</item>
-        <item name="android:textColorHint">@color/text_secondary</item>
-        <item name="android:textSize">16sp</item>
-        <item name="android:paddingStart">8dp</item>
-        <item name="android:paddingEnd">8dp</item>
-    </style>
-
-    <!-- Стили карточек -->
-    <style name="Widget.ArtChat.CardView" parent="Widget.MaterialComponents.CardView">
-        <item name="cardCornerRadius">16dp</item>
-        <item name="cardElevation">4dp</item>
-    </style>
-
-    <!-- Стили для диалогов -->
-    <style name="Widget.ArtChat.AlertDialog" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
-        <item name="android:background">@drawable/dialog_background</item>
-        <item name="android:windowBackground">@android:color/transparent</item>
-        <item name="buttonBarButtonStyle">@style/Widget.ArtChat.DialogButton</item>
-    </style>
-
-    <style name="Widget.ArtChat.DialogButton" parent="Widget.MaterialComponents.Button.TextButton">
-        <item name="android:textColor">@color/purple_500</item>
-        <item name="android:textSize">14sp</item>
-    </style>
-
-    <!-- Стили для тулбара -->
-    <style name="Widget.ArtChat.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
-        <item name="titleTextColor">@color/white</item>
-        <item name="subtitleTextColor">@color/white</item>
-        <item name="android:background">@color/purple_500</item>
-        <item name="elevation">4dp</item>
-    </style>
-
-    <!-- Стили для SeekBar -->
-    <style name="Widget.ArtChat.SeekBar" parent="Widget.AppCompat.SeekBar">
-        <item name="android:progressDrawable">@drawable/seekbar_progress</item>
-        <item name="android:thumb">@drawable/seekbar_thumb</item>
-    </style>
-
-    <!-- Стили для RecyclerView элементов палитры -->
-    <style name="Widget.ArtChat.ColorItem">
-        <item name="android:layout_width">32dp</item>
-        <item name="android:layout_height">32dp</item>
-        <item name="android:layout_margin">4dp</item>
+    <!-- Тема без ActionBar -->
+    <style name="Theme.ArtChat.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 </resources>

@@ -1,28 +1,45 @@
 package com.example.artchat
 
+import android.content.Context
 import android.os.Bundle
-import android.view.View
+import android.os.Handler
+import android.os.Looper
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.artchat.database.ChatMessageEntity
 import com.example.artchat.databinding.ActivityChatBinding
 import com.example.artchat.model.ChatMessage
-import com.example.artchat.adapter.ChatMessageAdapter
+import com.example.artchat.repository.ChatRepository
 import com.example.artchat.utils.PreferencesManager
 import com.example.artchat.websocket.WebSocketManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.*
 
 class ChatActivity : AppCompatActivity(), WebSocketManager.WebSocketListener {
 
     private lateinit var binding: ActivityChatBinding
-    private lateinit var adapter: ChatMessageAdapter
-    private val messages = mutableListOf<ChatMessage>()
+    private lateinit var messageAdapter: MessageAdapter
+    private val messageList = mutableListOf<ChatMessage>()
     private lateinit var preferences: PreferencesManager
     private lateinit var webSocketManager: WebSocketManager
+    private lateinit var chatRepository: ChatRepository
+
+    // Для предотвращения повторной отправки
+    private val sentMessageIds = mutableSetOf<String>()
+    private var lastSentMessage: String = ""
+    private var lastSendTime: Long = 0
+    private val MIN_SEND_INTERVAL = 1000L
+
+    // Текущая комната чата
+    private val currentRoom = "global"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,155 +47,228 @@ class ChatActivity : AppCompatActivity(), WebSocketManager.WebSocketListener {
         setContentView(binding.root)
 
         preferences = PreferencesManager(this)
+        chatRepository = ChatRepository.getInstance(this)
+
+        val myUserId = preferences.getUserId()
+
+        // Инициализация WebSocket
+        webSocketManager = WebSocketManager(myUserId, preferences.getToken())
+        webSocketManager.addListener(this)
+
+        // Настройка RecyclerView
+        messageAdapter = MessageAdapter(messageList, myUserId)
         setupRecyclerView()
-        setupClickListeners()
-        setupWebSocket()
-        loadInitialMessages()
+
+        // Настройка слушателей
+        setupListeners()
+
+        // Настройка ActionBar
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.title = "Чат"
+
+        // Загрузка сохраненных сообщений из базы данных
+        loadSavedMessages()
+
+        // Подключение к WebSocket
+        connectToWebSocket()
+
+        // Показать клавиатуру
+        window.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+
+        // Наблюдаем за обновлениями сообщений
+        observeMessages()
     }
 
     override fun onResume() {
         super.onResume()
-        if (!::webSocketManager.isInitialized || !webSocketManager.isConnected()) {
-            setupWebSocket()
+        binding.etMessage.apply {
+            requestFocus()
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
         }
     }
 
-    override fun onPause() {
-        super.onPause()
-        if (::webSocketManager.isInitialized) {
-            webSocketManager.removeListener(this)
-            webSocketManager.disconnect()
-        }
+    override fun onDestroy() {
+        super.onDestroy()
+        webSocketManager.removeListener(this)
+        webSocketManager.disconnect()
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return true
     }
 
     private fun setupRecyclerView() {
-        adapter = ChatMessageAdapter(messages, preferences.getUserId())
-        binding.recyclerViewMessages.layoutManager = LinearLayoutManager(this)
-        binding.recyclerViewMessages.adapter = adapter
+        binding.rvMessages.apply {
+            layoutManager = LinearLayoutManager(this@ChatActivity).apply {
+                stackFromEnd = true
+            }
+            adapter = messageAdapter
+        }
+
+        messageAdapter.registerAdapterDataObserver(object : androidx.recyclerview.widget.RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                binding.rvMessages.scrollToPosition(messageAdapter.itemCount - 1)
+            }
+        })
     }
 
-    private fun setupWebSocket() {
-        val userId = preferences.getUserId()
-        val token = preferences.getToken()
+    private fun setupListeners() {
+        binding.btnSend.setOnClickListener {
+            sendMessage()
+        }
 
-        webSocketManager = WebSocketManager(userId, token)
-        webSocketManager.addListener(this)
-        webSocketManager.connect()
+        binding.etMessage.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEND) {
+                sendMessage()
+                true
+            } else {
+                false
+            }
+        }
+
+        binding.etMessage.setOnKeyListener { _, keyCode, event ->
+            if (event.action == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
+                if (!event.isShiftPressed) {
+                    sendMessage()
+                    return@setOnKeyListener true
+                }
+            }
+            false
+        }
     }
 
-    private fun loadInitialMessages() {
-        // Можно загрузить начальные сообщения с сервера здесь
-        // Например, через Retrofit API
-        binding.progressBar.visibility = View.VISIBLE
+    private fun sendMessage() {
+        val messageText = binding.etMessage.text.toString().trim()
 
-        CoroutineScope(Dispatchers.IO).launch {
+        if (messageText.isEmpty()) {
+            return
+        }
+
+        // Проверка на слишком частую отправку
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastSendTime < MIN_SEND_INTERVAL) {
+            Toast.makeText(this, "Отправляйте сообщения немного медленнее", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Проверка на одинаковое сообщение
+        if (messageText == lastSentMessage) {
+            Toast.makeText(this, "Вы уже отправили это сообщение", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        lastSentMessage = messageText
+        lastSendTime = currentTime
+
+        // Создаем временное сообщение
+        val tempId = "temp_${currentTime}_${preferences.getUserId()}_${messageText.hashCode()}"
+        val tempMessage = ChatMessage(
+            id = null,
+            room = currentRoom,
+            sender_id = preferences.getUserId(),
+            sender_name = preferences.getDisplayName(),
+            message_type = "text",
+            content = messageText,
+            timestamp = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).format(Date(currentTime)),
+            is_read = false,
+            temp_id = tempId
+        )
+
+        // Сохраняем в базу данных
+        lifecycleScope.launch(Dispatchers.IO) {
+            chatRepository.saveMessage(tempMessage)
+        }
+
+        // Добавляем в список
+        messageAdapter.addMessage(tempMessage)
+        sentMessageIds.add(tempId)
+
+        // Отправляем через WebSocket
+        val success = webSocketManager.sendMessage(messageText, currentRoom)
+
+        if (!success) {
+            Toast.makeText(this, "Ошибка отправки, сообщение сохранено локально", Toast.LENGTH_SHORT).show()
+        }
+
+        // Очищаем поле ввода
+        binding.etMessage.setText("")
+        binding.etMessage.requestFocus()
+    }
+
+    private fun loadSavedMessages() {
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
-                // Пример загрузки сообщений
-                // val response = RetrofitClient.apiService.getGlobalChatMessages("Bearer $token")
-                // if (response.isSuccessful) {
-                //     val loadedMessages = response.body()?.messages ?: emptyList()
-                //     withContext(Dispatchers.Main) {
-                //         messages.addAll(loadedMessages)
-                //         adapter.notifyDataSetChanged()
-                //         updateEmptyState()
-                //     }
-                // }
-
-                // Для примепа просто делаем задержку
-                kotlinx.coroutines.delay(500)
+                // Загружаем последние 100 сообщений из базы данных
+                val savedMessages = chatRepository.getRecentMessages(currentRoom, 100)
 
                 withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
-                    updateEmptyState()
+                    messageList.clear()
+                    messageList.addAll(savedMessages)
+                    messageAdapter.notifyDataSetChanged()
+
+                    // Прокручиваем к последнему сообщению
+                    if (messageList.isNotEmpty()) {
+                        binding.rvMessages.scrollToPosition(messageList.size - 1)
+                    }
                 }
             } catch (e: Exception) {
+                e.printStackTrace()
                 withContext(Dispatchers.Main) {
-                    binding.progressBar.visibility = View.GONE
                     Toast.makeText(this@ChatActivity, "Ошибка загрузки сообщений", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
-    private fun setupClickListeners() {
-        // Send message
-        binding.btnSend.setOnClickListener {
-            val messageText = binding.etMessage.text?.toString()?.trim()
-            if (!messageText.isNullOrEmpty()) {
-                sendMessage(messageText)
-                binding.etMessage.text?.clear()
+    private fun observeMessages() {
+        lifecycleScope.launch {
+            chatRepository.getMessagesByRoom(currentRoom).collect { messages ->
+                // Обновляем список сообщений
+                messageList.clear()
+                messageList.addAll(messages)
+                messageAdapter.notifyDataSetChanged()
+
+                // Прокручиваем к последнему сообщению
+                if (messageList.isNotEmpty()) {
+                    binding.rvMessages.scrollToPosition(messageList.size - 1)
+                }
             }
         }
+    }
 
-        // Back button
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
+    private fun connectToWebSocket() {
+        webSocketManager.connect()
 
-        // Attach button
-        binding.btnAttach.setOnClickListener {
-            showAttachOptions()
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!webSocketManager.isConnected()) {
+                Toast.makeText(this, "Нет подключения к серверу", Toast.LENGTH_SHORT).show()
+            }
+        }, 3000)
 
-        // Online users button
-        binding.btnOnlineUsers.setOnClickListener {
-            showOnlineUsers()
-        }
-
-        // Private chat button
-        binding.btnPrivateChat.setOnClickListener {
-            Toast.makeText(this, "Приватные чаты в разработке", Toast.LENGTH_SHORT).show()
+        // Пытаемся отправить неотправленные сообщения
+        lifecycleScope.launch(Dispatchers.IO) {
+            val unsentMessages = chatRepository.getUnsentMessages()
+            unsentMessages.forEach { message ->
+                message.content?.let { content ->
+                    webSocketManager.sendMessage(content, currentRoom)
+                }
+            }
         }
     }
 
-    private fun sendMessage(text: String) {
-        if (!::webSocketManager.isInitialized || !webSocketManager.isConnected()) {
-            Toast.makeText(this, "Нет подключения к серверу", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        webSocketManager.sendMessage(text)
-
-        // Добавляем сообщение локально для мгновенного отображения
-        val message = ChatMessage(
-            id = null,
-            room = "global",
-            sender_id = preferences.getUserId(),
-            sender_name = preferences.getDisplayName() ?: "Аноним",
-            message_type = "text",
-            content = text,
-            drawing_url = null,
-            image_url = null,
-            timestamp = System.currentTimeMillis().toString()
-        )
-
-        messages.add(message)
-        adapter.notifyItemInserted(messages.size - 1)
-        binding.recyclerViewMessages.smoothScrollToPosition(messages.size - 1)
-        updateEmptyState()
-    }
-
-    private fun showAttachOptions() {
-        Toast.makeText(this, "Прикрепление файлов в разработке", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun showOnlineUsers() {
-        Toast.makeText(this, "Список онлайн пользователей в разработке", Toast.LENGTH_SHORT).show()
-    }
-
-    private fun updateEmptyState() {
-        binding.tvEmpty.visibility = if (messages.isEmpty()) View.VISIBLE else View.GONE
-    }
-
-    // WebSocket Listeners
+    // Реализация WebSocketListener
     override fun onMessageReceived(message: ChatMessage) {
         runOnUiThread {
-            // Проверяем, нет ли уже такого сообщения
-            if (messages.none { it.id == message.id }) {
-                messages.add(message)
-                adapter.notifyItemInserted(messages.size - 1)
-                binding.recyclerViewMessages.smoothScrollToPosition(messages.size - 1)
-                updateEmptyState()
+            // Проверяем, не получали ли мы уже это сообщение
+            val messageKey = "${message.id}_${message.content.hashCode()}"
+            if (!sentMessageIds.contains(messageKey)) {
+                // Сохраняем в базу данных
+                lifecycleScope.launch(Dispatchers.IO) {
+                    chatRepository.saveMessage(message)
+                }
+                sentMessageIds.add(messageKey)
             }
         }
     }
@@ -191,7 +281,7 @@ class ChatActivity : AppCompatActivity(), WebSocketManager.WebSocketListener {
 
     override fun onUserLeft(userId: Int, username: String) {
         runOnUiThread {
-            Toast.makeText(this, "$username покинул чат", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "$username вышел из чата", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -210,6 +300,21 @@ class ChatActivity : AppCompatActivity(), WebSocketManager.WebSocketListener {
     override fun onError(error: String) {
         runOnUiThread {
             Toast.makeText(this, "Ошибка: $error", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    override fun onMessageConfirmed(tempId: String) {
+        runOnUiThread {
+            // Находим временное сообщение в базе данных и обновляем его
+            lifecycleScope.launch(Dispatchers.IO) {
+                // Генерируем серверный ID (в реальном приложении это должен быть ID от сервера)
+                val serverId = (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
+                chatRepository.markMessageAsSent(tempId, serverId)
+
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@ChatActivity, "Сообщение доставлено", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

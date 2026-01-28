@@ -15,6 +15,18 @@
         android:textColor="@color/purple_700"
         android:layout_marginBottom="8dp" />
 
+    <!-- Добавляем этот TextView -->
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Добро пожаловать в ArtChat!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/purple_700"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Добавляем этот TextView -->
     <TextView
         android:id="@+id/tvChatHint"
         android:layout_width="wrap_content"
@@ -24,16 +36,6 @@
         android:textColor="@color/purple_500"
         android:visibility="gone"
         android:layout_marginBottom="16dp" />
-
-    <TextView
-        android:id="@+id/tvWelcome"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Добро пожаловать в ArtChat!"
-        android:textSize="20sp"
-        android:textStyle="bold"
-        android:textColor="@color/purple_700"
-        android:layout_marginBottom="32dp" />
 
     <Button
         android:id="@+id/btnDraw"

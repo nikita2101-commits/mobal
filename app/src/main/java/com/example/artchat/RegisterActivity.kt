@@ -146,8 +146,8 @@ class RegisterActivity : AppCompatActivity() {
                                 Toast.LENGTH_LONG
                             ).show()
 
-                            // Start main activity
-                            startActivity(Intent(this@RegisterActivity, MainActivity::class.java))
+                            // После регистрации переходим в ГЛАВНОЕ МЕНЮ
+                            startActivity(Intent(this@RegisterActivity, HomeActivity::class.java))
                             finish()
                         } else {
                             val errorMessage = registerResponse?.message ?: "Ошибка регистрации"

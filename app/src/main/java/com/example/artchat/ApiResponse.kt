@@ -5,6 +5,6 @@ data class ApiResponse<T>(
     val message: String? = null,
     val token: String? = null,
     val user: T? = null,
-    val messages: List<T>? = null,
-    val users: List<T>? = null
+    val messages: List<T>? = null,  // Для списка сообщений
+    val users: List<T>? = null      // Для списка пользователей
 )

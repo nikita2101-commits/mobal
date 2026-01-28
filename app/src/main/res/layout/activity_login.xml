@@ -83,8 +83,19 @@
             android:text="Гостевой режим"
             android:textSize="18sp"
             android:backgroundTint="@color/white"
-            android:textColor="@color/purple_700" />
+            android:textColor="@color/purple_700"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Добавленная кнопка выхода -->
+        <Button
+            android:id="@+id/btnExit"
+            android:layout_width="match_parent"
+            android:layout_height="56dp"
+            android:text="❌ Выход"
+            android:textSize="18sp"
+            android:backgroundTint="@color/red_500"
+            android:textColor="@color/white"
+            android:layout_marginTop="16dp" />
 
     </LinearLayout>
-
 </ScrollView>

@@ -1,5 +1,6 @@
 package com.example.artchat
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.text.method.PasswordTransformationMethod
@@ -18,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+
 class LoginActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityLoginBinding
@@ -30,6 +32,14 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         preferences = PreferencesManager(this)
+
+        // Проверяем, не залогинен ли уже пользователь
+        if (preferences.isLoggedIn()) {
+            // Если уже залогинен, сразу переходим в главное меню
+            startActivity(Intent(this, HomeActivity::class.java))
+            finish()
+            return
+        }
 
         setupViews()
         setupClickListeners()
@@ -68,6 +78,11 @@ class LoginActivity : AppCompatActivity() {
         binding.btnGuest.setOnClickListener {
             createGuestAccount()
         }
+
+        // Exit button
+        binding.btnExit.setOnClickListener {
+            showExitDialog()
+        }
     }
 
     private fun validateInput(email: String, password: String): Boolean {
@@ -104,7 +119,7 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val loginResponse = response.body()!!
 
-                        // Save user data using extended method
+                        // Save user data
                         preferences.saveUserDataExtended(
                             userId = loginResponse.user?.id ?: -1,
                             email = loginResponse.user?.email ?: email,
@@ -117,9 +132,9 @@ class LoginActivity : AppCompatActivity() {
                             avatarUrl = loginResponse.user?.avatar_url
                         )
 
-                        // Start main activity
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                        finish()
+                        // После успешного входа переходим в ГЛАВНОЕ МЕНЮ, а не в чат
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                        finish() // Закрываем LoginActivity
                     } else {
                         try {
                             val errorBody = response.errorBody()?.string()
@@ -165,7 +180,7 @@ class LoginActivity : AppCompatActivity() {
                     if (response.isSuccessful && response.body()?.success == true) {
                         val guestResponse = response.body()!!
 
-                        // Save guest data using extended method
+                        // Save guest data
                         preferences.saveUserDataExtended(
                             userId = guestResponse.user?.id ?: -1,
                             email = null,
@@ -178,8 +193,8 @@ class LoginActivity : AppCompatActivity() {
                             avatarUrl = guestResponse.user?.avatar_url
                         )
 
-                        // Start main activity
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                        // После создания гостя переходим в ГЛАВНОЕ МЕНЮ
+                        startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
                         finish()
                     } else {
                         try {
@@ -209,5 +224,20 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun showExitDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Выход из приложения")
+            .setMessage("Вы действительно хотите закрыть приложение?")
+            .setPositiveButton("Да") { _, _ ->
+                finishAffinity()
+            }
+            .setNegativeButton("Нет", null)
+            .show()
+    }
+
+    override fun onBackPressed() {
+        showExitDialog()
     }
 }
